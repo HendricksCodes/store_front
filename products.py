@@ -6,6 +6,13 @@ class Product:
         self.price = price
         self.quantity = quantity
         self.active = True
+        self.promotion = None
+
+    def get_promotion(self):
+        return self.promotion
+
+    def set_promotion(self, promotion):
+        self.promotion = promotion
 
     def get_quantity(self) -> float:
         return self.quantity
@@ -24,12 +31,40 @@ class Product:
     def deactivate(self):
         self.active = False
 
-    def show(self) -> str:
-        return f"{self.name}, Price: {self.price}, Quantity: {self.quantity}"
+    def show(self):
+        if self.promotion:
+            return f"{self.name}, Price: {self.price}, Quantity: {self.quantity}, Promotion: {self.promotion}"
+        else:
+            return f"{self.name}, Price: {self.price}, Quantity: {self.quantity}"
 
-    def buy(self, quantity) -> float:
-        if quantity <= 0 or quantity > self.quantity:
-            raise Exception("Invalid quantity.")
-        total_price = self.price * quantity
+    def buy(self, quantity):
+        if quantity > self.quantity:
+            raise Exception("Not enough quantity available")
         self.quantity -= quantity
-        return total_price
+
+        if self.promotion:
+            return self.promotion.apply_promotion(self, quantity)
+        else:
+            return self.price * quantity
+
+
+class NonStockedProduct(Product):
+    def __init__(self, name, price):
+        super().__init__(name, price, quantity=0)
+
+    def show(self):
+        return f"{self.name}, Price: {self.price}, Quantity: Unlimited"
+
+
+class LimitedProduct(Product):
+    def __init__(self, name, price, quantity, maximum):
+        super().__init__(name, price, quantity)
+        self.maximum = maximum
+
+    def buy(self, quantity):
+        if quantity > self.maximum:
+            raise Exception("Quantity exceeds the maximum allowed")
+        return super().buy(quantity)
+
+    def show(self):
+        return f"{self.name}, Price: {self.price}, Quantity: {self.quantity}, Max Quantity: {self.maximum}"

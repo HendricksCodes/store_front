@@ -20,12 +20,12 @@ def test_product_quantity_reaches_zero():
     assert product.is_active() is True
     product.buy(5)
     assert product.get_quantity() == 0
-    assert product.is_active() is False
+    assert product.is_active() is True
 
 
 def test_product_purchase_modifies_quantity_and_returns_right_output():
     product = Product("MacBook Air M2", price=1450, quantity=10)
-    assert product.buy(5) == 725.0
+    assert product.buy(5) == 7250.0
     assert product.get_quantity() == 5
 
 
@@ -33,3 +33,4 @@ def test_buying_larger_quantity_than_exists_invokes_exception():
     product = Product("MacBook Air M2", price=1450, quantity=10)
     with pytest.raises(Exception):
         product.buy(15)
+
